@@ -1,7 +1,7 @@
 """In-memory task storage; intentionally dependency-free."""
 
-from dataclasses import dataclass
-from service.config import DEFAULT_TASK_STATUS, MAX_TASK_TITLE_LENGTH
+from dataclasses import dataclass, replace
+from service.config import ALLOWED_TASK_STATUSES, DEFAULT_TASK_STATUS, MAX_TASK_TITLE_LENGTH
 
 
 @dataclass(frozen=True)
@@ -26,3 +26,9 @@ class TaskStore:
 
     def get_task(self, task_id: int) -> Task:
         return self._tasks[task_id]
+
+    def complete_task(self, task_id: int) -> Task:
+        task = self.get_task(task_id)
+        completed = replace(task, status=ALLOWED_TASK_STATUSES[1])
+        self._tasks[task_id] = completed
+        return completed
